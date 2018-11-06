@@ -17,7 +17,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from hfos.misc import std_uuid
+from isomer.misc import std_uuid
 
 __author__ = "Heiko 'riot' Weinen"
 __license__ = "AGPLv3"
@@ -31,14 +31,14 @@ Module NavData
 
 """
 
-from hfos.component import handler
-from hfos.database import objectmodels  # , ValidationError
-from hfos.events.objectmanager import updatesubscriptions
-from hfos.navdata.events import referenceframe, updatevessel, updateposition
-from hfos.logger import hfoslog, events, debug, verbose, critical, warn, \
+from isomer.component import handler
+from isomer.database import objectmodels  # , ValidationError
+from isomer.events.objectmanager import updatesubscriptions
+from isomer.navdata.events import referenceframe, updatevessel, updateposition
+from isomer.logger import isolog, events, debug, verbose, critical, warn, \
     hilight
-from hfos.component import ConfigurableComponent
-from hfos.events.client import send, broadcast
+from isomer.component import ConfigurableComponent
+from isomer.events.client import send, broadcast
 
 from math import copysign
 from uuid import uuid4

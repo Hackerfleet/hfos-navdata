@@ -41,17 +41,17 @@ This software package is a plugin module for HFOS.
 """,
       dependency_links=[],
       install_requires=['hfos>=1.2.0'],
-      entry_points="""[hfos.components]
+      entry_points="""[isomer.components]
     sensors=hfos.navdata.sensors:Sensors
     sensorplayback=hfos.navdata.playback:SensorPlayback
     busmanager=hfos.navdata.bus:SerialBusManager
     vesselmanager=hfos.navdata.vesselmanager:VesselManager
-[hfos.schemata]
+[isomer.schemata]
     sensordata=hfos.navdata.sensordata:SensorData
     sensordatatype=hfos.navdata.sensordatatype:SensorDataType
     mapcoords=hfos.navdata.mapcoords:MapCoords
     vessel=hfos.navdata.vessel:VesselData
-[hfos.provisions]
+[isomer.provisions]
     sensordatatypes=hfos.navdata.provisions.sensordatatype:provision
     vessel=hfos.navdata.provisions.vessel:provision
     """,

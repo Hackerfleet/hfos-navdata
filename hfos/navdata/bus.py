@@ -17,7 +17,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from hfos.debugger import cli_register_event
+from isomer.debugger import cli_register_event
 
 __author__ = "Heiko 'riot' Weinen"
 __license__ = "AGPLv3"
@@ -40,11 +40,11 @@ from circuits.net.sockets import TCPClient
 from circuits.net.events import connect, read
 from circuits.io.serial import Serial
 from decimal import Decimal
-from hfos.component import ConfigurableComponent, LoggingComponent, handler
-from hfos.database import ValidationError
-from hfos.logger import hfoslog, verbose, debug, warn, critical, error, hilight
-from hfos.misc import std_uuid
-from hfos.navdata.events import sensordata
+from isomer.component import ConfigurableComponent, LoggingComponent, handler
+from isomer.database import ValidationError
+from isomer.logger import isolog, verbose, debug, warn, critical, error, hilight
+from isomer.misc import std_uuid
+from isomer.navdata.events import sensordata
 
 # from pprint import pprint
 
@@ -54,7 +54,7 @@ try:
     import serial
 except ImportError:
     serial = None
-    hfoslog(
+    isolog(
         "[NMEA] No serialport found. Serial bus NMEA devices will be "
         "unavailable, install requirements.txt!",
         lvl=critical, emitter="NMEA")

@@ -32,7 +32,7 @@ SensorData:
 
 
 """
-from hfos.schemata.base import base_object
+from isomer.schemata.base import base_object
 
 SensorDataSchema = base_object('sensorData',
                                has_owner=False,

@@ -33,8 +33,8 @@ SensorDataType
 
 """
 
-from hfos.schemata.defaultform import savebutton
-from hfos.schemata.base import base_object
+from isomer.schemata.defaultform import savebutton
+from isomer.schemata.base import base_object
 
 SensorDataTypeSchema = base_object('sensordatatype',
                                    has_owner=False,

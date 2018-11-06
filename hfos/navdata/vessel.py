@@ -32,7 +32,7 @@ Vessel: Vesselprofile to store Vessel specific settings
 
 
 """
-from hfos.schemata.base import base_object, uuid_object
+from isomer.schemata.base import base_object, uuid_object
 
 VesselSchema = base_object('vessel')
 

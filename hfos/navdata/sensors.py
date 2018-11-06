@@ -38,13 +38,13 @@ from circuits.net.sockets import TCPClient
 from circuits.net.events import connect, read
 from circuits.io.serial import Serial
 
-from hfos.database import objectmodels  # , ValidationError
-from hfos.events.system import authorizedevent
-from hfos.navdata.events import referenceframe
-from hfos.logger import hfoslog, events, debug, verbose, critical, warn, \
+from isomer.database import objectmodels  # , ValidationError
+from isomer.events.system import authorized_event
+from isomer.navdata.events import referenceframe
+from isomer.logger import isolog, events, debug, verbose, critical, warn, \
     error, hilight
-from hfos.component import ConfigurableComponent, handler
-from hfos.events.client import send, broadcast
+from isomer.component import ConfigurableComponent, handler
+from isomer.events.client import send, broadcast
 
 from pprint import pprint
 
@@ -52,7 +52,7 @@ try:
     import serial
 except ImportError:
     serial = None
-    hfoslog(
+    isolog(
         "[NMEA] No serialport found. Serial bus NMEA devices will be "
         "unavailable, install requirements.txt!",
         lvl=critical, emitter="NMEA")
@@ -86,28 +86,28 @@ def serial_ports():
             s.close()
             result.append(port)
         except (OSError, serial.SerialException) as e:
-            hfoslog('Could not open serial port:', port, e, type(e),
-                    exc=True, lvl=warn)
+            isolog('Could not open serial port:', port, e, type(e),
+                   exc=True, lvl=warn)
     return result
 
 
-class subscribe(authorizedevent):
+class subscribe(authorized_event):
     """Subscribes from a navigation data subscription"""
 
 
-class unsubscribe(authorizedevent):
+class unsubscribe(authorized_event):
     """Unsubscribes from a navigation data subscription"""
 
 
-class sensed(authorizedevent):
+class sensed(authorized_event):
     """Requests a list of sensed values"""
 
 
-class start_scanner_user(authorizedevent):
+class start_scanner_user(authorized_event):
     """Starts the sensor bus scanning"""
 
 
-class stop_scanner(authorizedevent):
+class stop_scanner(authorized_event):
     """Stops the sensor bus scanning"""
 
 
@@ -131,9 +131,12 @@ class Sensors(ConfigurableComponent):
 
         super(Sensors, self).__init__('NAVDATA', *args)
 
+        self.log('Caching sensor datatypes')
+
         self.datatypes = {}
 
-        for item in objectmodels['sensordatatype'].find():
+        cursor = objectmodels['sensordatatype'].find()
+        for item in cursor:
             # self.log("Adding sensor datatype to inventory:", item)
             self.datatypes[item.name] = item
 

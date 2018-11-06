@@ -22,8 +22,8 @@ __author__ = "Heiko 'riot' Weinen"
 __license__ = "AGPLv3"
 
 from circuits import Event
-from hfos.logger import hfoslog, events
-from hfos.events.system import authorizedevent
+from isomer.logger import isolog, events
+from isomer.events.system import authorized_event
 
 
 # Internal Navigation Events
@@ -52,8 +52,8 @@ class referenceframe(Event):
         """
         super(referenceframe, self).__init__()
         self.data = data
-        hfoslog("[NAVDATA-EVENT] Reference frame generated: ", data,
-                lvl=events)
+        isolog("[NAVDATA-EVENT] Reference frame generated: ", data,
+               lvl=events)
 
 
 class updateposition(Event):
@@ -66,8 +66,8 @@ class updateposition(Event):
         """
         super(updateposition, self).__init__()
         self.vessel = vessel
-        hfoslog("[NAVDATA-EVENT] Vessel position has changed: ", vessel,
-                lvl=events)
+        isolog("[NAVDATA-EVENT] Vessel position has changed: ", vessel,
+               lvl=events)
 
 
 class updatevessel(Event):

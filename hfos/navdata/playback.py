@@ -31,9 +31,9 @@ Module NMEA
 """
 
 from circuits import Timer, Event
-from hfos.component import ConfigurableComponent
-from hfos.logger import verbose, debug, warn, critical, error
-from hfos.navdata.bus import serial_packet
+from isomer.component import ConfigurableComponent
+from isomer.logger import verbose, debug, warn, critical, error
+from isomer.navdata.bus import serial_packet
 
 
 class SensorPlayback(ConfigurableComponent):

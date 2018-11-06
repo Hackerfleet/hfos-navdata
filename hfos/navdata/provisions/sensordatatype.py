@@ -28,7 +28,7 @@ from pynmea2 import types
 from pynmea2.nmea import NMEASentenceType, ProprietarySentence
 from pynmea2.types import proprietary
 
-from hfos.database import objectmodels
+from isomer.database import objectmodels
 
 
 # TODO: This needs to be independent of the datasource.
