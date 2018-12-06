@@ -40,7 +40,7 @@ A navigational-data handling module.
 This software package is a plugin module for HFOS.
 """,
       dependency_links=[],
-      install_requires=['hfos>=1.2.0'],
+      install_requires=['isomer>=1.0.0'],
       entry_points="""[isomer.components]
     sensors=hfos.navdata.sensors:Sensors
     sensorplayback=hfos.navdata.playback:SensorPlayback

@@ -162,7 +162,7 @@ class Sensors(ConfigurableComponent):
         Timer(self.interval, Event.create('navdatapush'), self.channel,
               persist=True).register(self)
 
-    @handler(sensed, channel='hfosweb')
+    @handler(sensed, channel='isomer-web')
     def sensed(self, event):
         sensed = []
 
@@ -178,9 +178,9 @@ class Sensors(ConfigurableComponent):
         }
 
         self.log("Transmitting list of sensed values:", self.sensed)
-        self.fireEvent(send(event.client.uuid, packet), 'hfosweb')
+        self.fireEvent(send(event.client.uuid, packet), 'isomer-web')
 
-    @handler(subscribe, channel='hfosweb')
+    @handler(subscribe, channel='isomer-web')
     def subscribe(self, event):
         self.log('Navdata subscription requested for', event.data)
 
@@ -196,7 +196,7 @@ class Sensors(ConfigurableComponent):
                 self.subscriptions[item] = [event.client.uuid]
                 self.log("Created new subscription for ", item)
 
-    @handler(unsubscribe, channel='hfosweb')
+    @handler(unsubscribe, channel='isomer-web')
     def unsubscribe(self, event):
         self.log('Navdata unsubscription requested for', event.data)
 
@@ -210,7 +210,7 @@ class Sensors(ConfigurableComponent):
                     else:
                         self.log("Removed subscription for ", item)
 
-    @handler('clientdisconnect', channel='hfosweb')
+    @handler('clientdisconnect', channel='isomer-web')
     def clientdisconnect(self, event):
         self.log('Deleting subscriptions for disconnected client', lvl=debug)
         empty = []
@@ -274,7 +274,7 @@ class Sensors(ConfigurableComponent):
                         for uuid in self.subscriptions[ref.name]:
                             self.log("Serving to ", uuid, lvl=events)
                             self.fireEvent(send(uuid, packet),
-                                           'hfosweb')
+                                           'isomer-web')
 
                     # self.log("New item: ", item)
                     sensordata = objectmodels['sensordata'](item)
@@ -312,7 +312,7 @@ class Sensors(ConfigurableComponent):
                         'data': self.referenceframe,
                         'ages': self.referenceages
                     }
-                }), "hfosweb")
+                }), "isomer-web")
                 self.intervalcount = 0
                 # self.log("Reference frame successfully pushed.",
                 # lvl=verbose)

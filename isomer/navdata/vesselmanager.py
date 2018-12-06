@@ -169,7 +169,7 @@ class VesselManager(ConfigurableComponent):
 
             self.vessel.geojson['coordinates'] = [lon, lat]
             self.vessel.save()
-            self.fireEvent(updateposition(self.vessel), 'hfosweb')
+            self.fireEvent(updateposition(self.vessel), 'isomer-web')
 
             if self.vessel_mapview is None:
                 return
@@ -189,4 +189,4 @@ class VesselManager(ConfigurableComponent):
             self.vessel_mapview.coords = coords
             self.vessel_mapview.save()
 
-            self.fireEvent(updatesubscriptions('mapview', self.vessel_mapview), 'hfosweb')
+            self.fireEvent(updatesubscriptions('mapview', self.vessel_mapview), 'isomer-web')
