@@ -3,7 +3,7 @@
 
 # HFOS - Hackerfleet Operating System
 # ===================================
-# Copyright (C) 2011-2018 Heiko 'riot' Weinen <riot@c-base.org> and others.
+# Copyright (C) 2011-2019 Heiko 'riot' Weinen <riot@c-base.org> and others.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -41,22 +41,38 @@ SensorDataTypeSchema = base_object('sensordatatype',
                                    all_roles='crew')
 
 SensorDataTypeSchema['properties'].update({
-    'sentence': {'type': 'string', 'title': 'Sentence',
-                 'description': '(At least for) NMEA Sentence Type'},
-    'title': {'type': 'string', 'title': 'Title',
-              'description': 'Descriptive Title'},
-    'description': {'type': 'string', 'title': 'Description',
-                    'description': 'Sensor Type Description'},
-    'type': {'type': 'string', 'title': 'Type',
-             'description': 'Sensor Data Value Type'},
-    'timestamp': {'type': 'number', 'title': 'Timestamp',
-                  'description': 'Date of last known Sensor Value'},
-    'lastvalue': {'type': 'string', 'title': 'Last Value',
-                  'description': 'Last known Sensor Value'},
-    'record': {'type': 'boolean', 'title': 'Record Sensor',
-               'description': 'Record value changes of this sensor.'},
-    'bus': {'type': 'string', 'title': 'Connected Bus',
-            'description': 'Name of bus, the device is connected on.'}
+    'sentence': {
+        'type': 'string', 'title': 'Sentence',
+        'description': '(At least for) NMEA Sentence Type'
+    },
+    'title': {
+        'type': 'string', 'title': 'Title',
+        'description': 'Descriptive Title'
+    },
+    'description': {
+        'type': 'string', 'title': 'Description',
+        'description': 'Sensor Type Description'
+    },
+    'type': {
+        'type': 'string', 'title': 'Type',
+        'description': 'Sensor Data Value Type'
+    },
+    'timestamp': {
+        'type': 'number', 'title': 'Timestamp',
+        'description': 'Date of last known Sensor Value'
+    },
+    'lastvalue': {
+        'type': 'string', 'title': 'Last Value',
+        'description': 'Last known Sensor Value'
+    },
+    'record': {
+        'type': 'boolean', 'title': 'Record Sensor',
+        'description': 'Record value changes of this sensor.'
+    },
+    'bus': {
+        'type': 'string', 'title': 'Connected Bus',
+        'description': 'Name of bus, the device is connected on.'
+    }
 })
 
 SensorDataTypeForm = [

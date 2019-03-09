@@ -1,8 +1,9 @@
 'use strict';
+
 /*
  * Hackerfleet Operating System
  * =====================================================================
- * Copyright (C) 2011-2018 riot <riot@c-base.org> and others.
+ * Copyright (C) 2011-2019 riot <riot@c-base.org> and others.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -42,18 +43,18 @@ class NavDataService {
         let self = this;
 
 
-        this.updateConfig = function() {
+        this.updateConfig = function () {
             self.op.getObject('vessel', this.vesseluuid, true, {})
         };
 
-        rootscope.$on('OP.Get', function(event, objuuid, obj, schema) {
+        rootscope.$on('OP.Get', function (event, objuuid, obj, schema) {
             if (schema == 'vessel' && obj.uuid == self.vesseluuid) {
                 console.log('[NAV] Local vessel info received!');
                 self.vessel = obj;
             }
         });
 
-        rootscope.$on('System.Config', function(ev) {
+        rootscope.$on('System.Config', function (ev) {
             console.log('[NAV] System config was updated, acquiring new vessel info');
             self.vesseluuid = systemconfig.config.vesseluuid;
             self.updateConfig();
