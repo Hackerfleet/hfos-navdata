@@ -170,7 +170,7 @@ class Sensors(ConfigurableComponent):
             sensed.append(value.serializablefields())
 
         packet = {
-            'component': 'hfos.navdata.sensors',
+            'component': 'isomer.navdata.sensors',
             'action': 'sensed',
             'data': {
                 'sensed': sensed
@@ -265,7 +265,7 @@ class Sensors(ConfigurableComponent):
                     if ref.name in self.subscriptions:
 
                         packet = {
-                            'component': 'hfos.navdata.sensors',
+                            'component': 'isomer.navdata.sensors',
                             'action': 'update',
                             'data': item
                         }
@@ -306,7 +306,7 @@ class Sensors(ConfigurableComponent):
             if self.intervalcount == self.passiveinterval and len(
                     self.referenceframe) > 0:
                 self.fireEvent(broadcast('users', {
-                    'component': 'hfos.navdata.sensors',
+                    'component': 'isomer.navdata.sensors',
                     'action': 'update',
                     'data': {
                         'data': self.referenceframe,
