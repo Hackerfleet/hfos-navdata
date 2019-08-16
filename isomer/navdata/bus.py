@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from isomer.debugger import cli_register_event
+from isomer.component import authorized_event
 
 __author__ = "Heiko 'riot' Weinen"
 __license__ = "AGPLv3"
@@ -45,6 +46,8 @@ from isomer.database import ValidationError
 from isomer.logger import isolog, verbose, debug, warn, critical, error, hilight
 from isomer.misc import std_uuid
 from isomer.navdata.events import sensordata
+
+from isomer.schemata.defaultform import event_button
 
 # from pprint import pprint
 
@@ -128,7 +131,7 @@ class restart_scan(Event):
     pass
 
 
-class start_scanner(Event):
+class start_scanner(authorized_event):
     pass
 
 
@@ -266,14 +269,15 @@ class SerialBusManager(ConfigurableComponent):
     }
 
     configform = [
+        event_button('start_scan', 'Scan busses', 'isomer.navdata.bus',
+                     'start_scanner', {}),
         {
             'key': 'scanner.baud_rates',
             'type': 'checkboxes',
-            'titleMap': [
-
-            ]
+            'titleMap': baudrate_titlemap,
         },
         'scanner.timeout',
+        'scanner.enabled',
         {
             'title': 'Ports',
             'type': 'fieldset',
@@ -476,8 +480,13 @@ class SerialBusManager(ConfigurableComponent):
             self.log('Scan done. Found protocols:', self.scan_results)
             self.fireEvent(scan_results(self.scan_results))
 
-    @handler('start_scanner')
-    def start_scanner(self, *args):
+    @handler('reload_configuration')
+    def reload_configuration(self, event):
+        if event.target == self.uniquename:
+            self.log('Reconnecting serial ports')
+
+    @handler(start_scanner, channel='isomer-web')
+    def start_scanner(self, *args, **kwargs):
         self.log('Initiating scan')
         scanning = False
 
