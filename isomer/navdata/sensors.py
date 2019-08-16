@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from isomer.events.objectmanager import objectchange
 
 __author__ = "Heiko 'riot' Weinen"
 __license__ = "AGPLv3"
@@ -103,14 +104,6 @@ class sensed(authorized_event):
     """Requests a list of sensed values"""
 
 
-class start_scanner_user(authorized_event):
-    """Starts the sensor bus scanning"""
-
-
-class stop_scanner(authorized_event):
-    """Stops the sensor bus scanning"""
-
-
 class Sensors(ConfigurableComponent):
     """
     The NavData (Navigation Data) component receives new sensordata and
@@ -131,22 +124,9 @@ class Sensors(ConfigurableComponent):
 
         super(Sensors, self).__init__('NAVDATA', *args)
 
-        self.log('Caching sensor datatypes')
-
         self.datatypes = {}
 
-        cursor = objectmodels['sensordatatype'].find()
-        for item in cursor:
-            # self.log("Adding sensor datatype to inventory:", item)
-            self.datatypes[item.name] = item
-
-        self.log("Added %i sensordatatypes to inventory." % len(
-            self.datatypes))
-
-        if len(self.datatypes) == 0:
-            self.log("No sensordatatypes found! You may need to install the "
-                     "provisions again.", lvl=warn)
-
+        self._update_sensordata()
         self.sensed = {}
 
         self.referenceframe = {}  # objectmodels['sensordata']()
@@ -161,6 +141,34 @@ class Sensors(ConfigurableComponent):
 
         Timer(self.interval, Event.create('navdatapush'), self.channel,
               persist=True).register(self)
+
+    def _update_sensordata(self, uuid=None):
+
+        if uuid is None:
+            self.log('Caching all sensor datatypes', lvl=verbose)
+            self.datatypes = {}
+            cursor = objectmodels['sensordatatype'].find()
+
+            for item in cursor:
+                # self.log("Adding sensor datatype to inventory:", item)
+                self.datatypes[item.name] = item
+        else:
+            self.log('Caching sensor datatype:', uuid, lvl=debug)
+            item = objectmodels['sensordatatype'].find_one({'uuid': uuid})
+            self.datatypes[item.name] = item
+
+        self.log("Have %i sensordatatypes in inventory." % len(
+            self.datatypes), lvl=debug)
+
+        if len(self.datatypes) == 0:
+            self.log("No sensordatatypes found! You may need to install the "
+                     "provisions again.", lvl=warn)
+
+    @handler("objectchange", channel="isomer-web")
+    def objectchange(self, event):
+        if event.schema == 'sensordatatype':
+            self.log('Updating sensordatatype:', event.uuid, lvl=debug)
+            self._update_sensordata(event.uuid)
 
     @handler(sensed, channel='isomer-web')
     def sensed(self, event):
@@ -253,7 +261,7 @@ class Sensors(ConfigurableComponent):
                     # self.log("Reference outdated:", ref._fields)
 
                     item = {
-                        'value': value,
+                        'value': str(value),
                         'timestamp': timestamp,
                         'type': name
                     }
