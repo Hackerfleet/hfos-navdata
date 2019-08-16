@@ -1,0 +1,173 @@
+<div id="monitorjumbo"
+     class="jumbotron"
+     style="padding-top: 5px; position: absolute;"
+     ng-style="{position: $ctrl.hideui && 'absolute' || 'relative'}">
+    <div class="well" id="sensedFrame">
+        <h1>Recently sensed data</h1>
+        <button type="button" class="btn btn-success" ng-click="$ctrl.requestSensed()">
+            <span class="fa fa-recycle"></span>
+            Update
+        </button>
+        <button type="button" class="btn btn-danger" ng-click="$ctrl.requestAll()">
+            <span class="fa fa-recycle"></span>
+            Show all
+        </button>
+        <div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success"
+                        ng-click="$ctrl.toggleRecordSelected(true)">
+                    <span class="fa fa-circle"></span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger"
+                        ng-click="$ctrl.toggleRecordSelected(false)">
+                    <span class="fa fa-stop"></span>
+                </button>
+            </div>
+
+            <div ng-if="$ctrl.hasLogbook">
+                <form>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-info">Default Logbook
+                        </button>
+                        <button type="button" class="btn btn-info dropdown-toggle"
+                                data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a ng-repeat="logbook in $ctrl.logbooks"
+                                   ng-click="$ctrl.addSelectedLogSensorValues(logbook.uuid)">
+                                {{logbook.name}}
+                            </a></li>
+                        </ul>
+
+                    </div>
+                </form>
+            </div>
+            <div ng-if="$ctrl.hasDashboard">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-info">Default Dashboard
+                    </button>
+                    <button type="button" class="btn btn-info dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a ng-repeat="dashboard in $ctrl.dashboards"
+                               ng-click="$ctrl.addSelectedDashboardSensorValues(dashboard.uuid)">
+                            {{dashboard.name}}
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            </form>
+        </div>
+        <table class="table table-striped table-responsive table-condensed">
+            <tr>
+                <th><input type="checkbox" ng-model="$ctrl.selectedAll"
+                           ng-click="$ctrl.toggleSelectAll()"></th>
+                <th>Identifier</th>
+                <th>Sentence name</th>
+                <th>Value title</th>
+                <th>Last value</th>
+                <!-- <th>Last sensed</th> -->
+                <th>Record</th>
+                <th>Logbook</th>
+                <th>Dashboard</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="text" ng-model="$ctrl.filterIdentifier"/></td>
+                <td><input type="text" ng-model="$ctrl.filterSentence"/></td>
+                <td><input type="text" ng-model="$ctrl.filterLabel"/></td>
+                <td></td>
+                <!-- <td></td>-->
+                <td><input type="checkbox" ng-model="$ctrl.filterRecording"
+                           ng-class="{'indeterminate': $ctrl.filterRecordingIndeterminate}"
+                           ui-indeterminate="$ctrl.filterRecordingIndeterminate"
+                           ng-click="$ctrl.toggleRecordingFilter()"></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr ng-repeat="(uuid, item) in $ctrl.sensed"
+                ng-show="(item.name.toLowerCase().indexOf($ctrl.filterIdentifier.toLowerCase()) > -1) &&
+                         (item.sentence.toLowerCase().indexOf($ctrl.filterSentence.toLowerCase()) > -1) &&
+                         (item.title.toLowerCase().indexOf($ctrl.filterLabel.toLowerCase()) > -1) &&
+                         ($ctrl.filterRecordingIndeterminate ? true : item.record === $ctrl.filterRecording)">
+                <td><input type="checkbox" ng-model="$ctrl.selected[uuid]"
+                           ng-change="$ctrl.selectedAll = false"></td>
+                <td>{{item.name}}</td>
+                <td>{{item.sentence}}</td>
+                <td>{{item.title}}</td>
+                <td>{{item.lastvalue}}</td>
+                <!-- <td>{{$ctrl.humanize($ctrl.now - item.timestamp, {round:true})}}</td> -->
+                <td>
+                    <div class="btn-group">
+                        <button type="button"
+                                ng-class="{'active': $ctrl.recording[uuid] !== false,
+                                           'btn-success': $ctrl.recording[uuid] === false,
+                                           'btn-danger': $ctrl.recording[uuid] !== false}"
+                                class="btn" ng-click="$ctrl.toggleRecord(item)">
+                            <span class="fa" ng-class="{'fa-circle': $ctrl.recording[uuid] === false,
+                                                        'fa-stop': $ctrl.recording[uuid] === true}">
+
+                            </span>
+                        </button>
+                    </div>
+                </td>
+                <td ng-if="$ctrl.hasLogbook">
+                    <form>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info">Default Logbook
+                            </button>
+                            <button type="button" class="btn btn-info dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a ng-repeat="logbook in $ctrl.logbooks"
+                                       ng-click="$ctrl.addLogSensorValue(item, logbook.uuid)">
+                                    {{logbook.name}}
+                                </a></li>
+                            </ul>
+
+                        </div>
+                    </form>
+                </td>
+                <td ng-if="$ctrl.hasDashboard">
+                    <form>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info">Default Dashboard
+                            </button>
+                            <button type="button" class="btn btn-info dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a ng-repeat="dashboard in $ctrl.dashboards"
+                                       ng-click="$ctrl.addDashboardSensorValue(item, dashboard.uuid)">
+                                    {{dashboard.name}}
+                                </a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </td>
+                <!--
+                <td><input bs-switch ng-model="item.record" type="checkbox" switch-size="small"></td>
+                <td><input bs-switch ng-model="item.observed" ng-change="$ctrl.toggleDashboardItem(key)"
+                           type="checkbox" switch-size="small"></td>
+
+                -->
+            </tr>
+        </table>
+    </div>
+</div>
