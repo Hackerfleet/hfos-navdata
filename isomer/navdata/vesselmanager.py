@@ -84,27 +84,31 @@ class VesselManager(ConfigurableComponent):
 
         mapview = None
 
-        if hasattr(vessel, 'mapviewuuid'):
-            self.log('Found a corresponding mapview: ', vessel.mapviewuuid,
-                     lvl=debug)
-            mapview = objectmodels['mapview'].find_one(
-                {'uuid': vessel.mapviewuuid})
+        if 'mapview' in objectmodels:
+            if hasattr(vessel, 'mapviewuuid'):
+                self.log('Found a corresponding mapview: ', vessel.mapviewuuid,
+                         lvl=debug)
+                mapview = objectmodels['mapview'].find_one(
+                    {'uuid': vessel.mapviewuuid})
 
-        if mapview is None:
-            self.log('Creating a new vessel associated mapview')
-            mapview = objectmodels['mapview']({'uuid': str(uuid4())})
-            mapview.shared = True
-            mapview.name = 'Follow ' + vessel.name
-            mapview.description = 'Automatically following mapview for ' + \
-                                  vessel.name
-            mapview.viewtype = 'vessel'
+            if mapview is None:
+                self.log('Creating a new vessel associated mapview')
+                mapview = objectmodels['mapview']({'uuid': str(uuid4())})
+                mapview.shared = True
+                mapview.name = 'Follow ' + vessel.name
+                mapview.description = 'Automatically following mapview for ' + \
+                                      vessel.name
+                mapview.viewtype = 'vessel'
 
-            self.log('Saving new mapview: ', mapview._fields)
-            mapview.save()
+                self.log('Saving new mapview: ', mapview._fields)
+                mapview.save()
 
-            vessel.mapviewuuid = mapview.uuid
+                vessel.mapviewuuid = mapview.uuid
 
-            vessel.save()
+                vessel.save()
+        else:
+            self.log('No map module installed. Install hfos-map for full functionality',
+                     lvl=warn)
 
         self.vessel_mapview = mapview
 
