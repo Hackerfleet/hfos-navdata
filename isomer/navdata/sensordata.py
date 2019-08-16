@@ -41,7 +41,8 @@ SensorDataSchema = base_object('sensorData',
 
 SensorDataSchema['properties'].update({
     'value': {
-        'title': 'Value', 'description': 'Sensordata Value'
+        'title': 'Value', 'description': 'Sensordata Value',
+        'type': 'string'
     },
     'timestamp': {
         'type': 'number', 'title': 'Timestamp',

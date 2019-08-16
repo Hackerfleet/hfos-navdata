@@ -41,6 +41,14 @@ SensorDataTypeSchema = base_object('sensordatatype',
                                    all_roles='crew')
 
 SensorDataTypeSchema['properties'].update({
+    'talker': {
+        'type': 'string', 'title': 'Talker',
+        'description': 'Originating Sensor'
+    },
+    'messagetype': {
+        'type': 'string', 'title': 'Message type',
+        'description': 'Sensor message type'
+    },
     'sentence': {
         'type': 'string', 'title': 'Sentence',
         'description': '(At least for) NMEA Sentence Type'
