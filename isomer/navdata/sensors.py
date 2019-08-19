@@ -126,7 +126,7 @@ class Sensors(ConfigurableComponent):
 
         self.datatypes = {}
 
-        self._update_sensordata()
+        # self._update_sensordata()
         self.sensed = {}
 
         self.referenceframe = {}  # objectmodels['sensordata']()
@@ -142,22 +142,16 @@ class Sensors(ConfigurableComponent):
         Timer(self.interval, Event.create('navdatapush'), self.channel,
               persist=True).register(self)
 
-    def _update_sensordata(self, uuid=None):
-
-        if uuid is None:
-            self.log('Caching all sensor datatypes', lvl=verbose)
-            self.datatypes = {}
-            cursor = objectmodels['sensordatatype'].find()
-
-            for item in cursor:
-                # self.log("Adding sensor datatype to inventory:", item)
-                self.datatypes[item.name] = item
-        else:
-            self.log('Caching sensor datatype:', uuid, lvl=debug)
-            item = objectmodels['sensordatatype'].find_one({'uuid': uuid})
+    def _update_sensordata(self, name):
+        self.log('Caching sensor datatype:', name, lvl=debug)
+        item = objectmodels['sensordatatype'].find_one({'name': name})
+        if item is not None:
             self.datatypes[item.name] = item
+        else:
+            self.log('Unknown sensordatatype!', lvl=error)
+            raise AttributeError
 
-        self.log("Have %i sensordatatypes in inventory." % len(
+        self.log("Have now %i sensordatatypes in inventory." % len(
             self.datatypes), lvl=debug)
 
         if len(self.datatypes) == 0:
@@ -167,8 +161,8 @@ class Sensors(ConfigurableComponent):
     @handler("objectchange", channel="isomer-web")
     def objectchange(self, event):
         if event.schema == 'sensordatatype':
-            self.log('Updating sensordatatype:', event.uuid, lvl=debug)
-            self._update_sensordata(event.uuid)
+            self.log('Updating sensordatatype:', event.object.name, lvl=debug)
+            self._update_sensordata(event.object.name)
 
     @handler(sensed, channel='isomer-web')
     def sensed(self, event):
@@ -253,50 +247,53 @@ class Sensors(ConfigurableComponent):
         self.log("New incoming navdata:", data, lvl=verbose)
 
         for name, value in data.items():
-            if name in self.datatypes:
-                ref = self.datatypes[name]
-                self.sensed[name] = ref
+            if name not in self.datatypes:
+                try:
+                    self._update_sensordata(name)
+                except AttributeError:
+                    continue
 
-                if ref.lastvalue != str(value):
-                    # self.log("Reference outdated:", ref._fields)
+            ref = self.datatypes[name]
+            self.sensed[name] = ref
 
-                    item = {
-                        'value': str(value),
-                        'timestamp': timestamp,
-                        'type': name
+            if ref.lastvalue != str(value):
+                # self.log("Reference outdated:", ref._fields)
+
+                item = {
+                    'value': str(value),
+                    'timestamp': timestamp,
+                    'type': name
+                }
+
+                self.referenceframe[name] = value
+                self.referenceages[name] = timestamp
+
+                # self.log("Subscriptions:", self.subscriptions, ref.name)
+                if ref.name in self.subscriptions:
+
+                    packet = {
+                        'component': 'isomer.navdata.sensors',
+                        'action': 'update',
+                        'data': item
                     }
 
-                    self.referenceframe[name] = value
-                    self.referenceages[name] = timestamp
+                    self.log("Serving update: ", packet, lvl=verbose)
+                    for uuid in self.subscriptions[ref.name]:
+                        self.log("Serving to ", uuid, lvl=events)
+                        self.fireEvent(send(uuid, packet),
+                                       'isomer-web')
 
-                    # self.log("Subscriptions:", self.subscriptions, ref.name)
-                    if ref.name in self.subscriptions:
+                # self.log("New item: ", item)
+                sensordata = objectmodels['sensordata'](item)
+                # self.log("Value entry:", sensordata._fields)
 
-                        packet = {
-                            'component': 'isomer.navdata.sensors',
-                            'action': 'update',
-                            'data': item
-                        }
+                if ref.record:
+                    self.log("Recording updated reference:",
+                             sensordata._fields)
+                    sensordata.save()
 
-                        self.log("Serving update: ", packet, lvl=verbose)
-                        for uuid in self.subscriptions[ref.name]:
-                            self.log("Serving to ", uuid, lvl=events)
-                            self.fireEvent(send(uuid, packet),
-                                           'isomer-web')
-
-                    # self.log("New item: ", item)
-                    sensordata = objectmodels['sensordata'](item)
-                    # self.log("Value entry:", sensordata._fields)
-
-                    if ref.record:
-                        self.log("Recording updated reference:",
-                                 sensordata._fields)
-                        sensordata.save()
-
-                    ref.lastvalue = str(value)
-                    ref.timestamp = timestamp
-            else:
-                self.log("Unknown sensor data received!", data, lvl=warn)
+                ref.lastvalue = str(value)
+                ref.timestamp = timestamp
 
     def navdatapush(self):
         """
